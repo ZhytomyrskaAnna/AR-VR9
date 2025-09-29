@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Практична робота №9: Власні маркери</title>
+    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v7.2.0/dist/aframe-extras.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <script scr="components.js"></script>
+    <script>
+      AFRAME.registerComponent('clickable', {
+          init: function () {
+              this.el.addEventListener('click', () => {
+                  this.el.emit('clicked');
+              });
+          }
+      });
+    </script>
+  </head>
+  <body style="margin : 0px; overflow: hidden;">
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+
+      <a-assets>
+        <a-asset-item id="dragoniteModel" src="assets/dragonite_official.glb"></a-asset-item>
+        <img id="phoneIcon" src="assets/phone.jpg">
+        <img id="emailIcon" src="assets/gmail.jpg">
+        <img id="telegramIcon" src="https://raw.githubusercontent.com/aframevr/aframe/master/docs/assets/images/linkedin.png">
+      </a-assets>
+
+      <a-light type="directional" 
+      position="-5 5 -5" 
+      intensity="1.5" 
+      castShadow="true"
+      shadow-mapSize="1024 1024"
+      shadow-camera-near="0.5"
+      shadow-camera-far="20"
+      shadow-camera-left="-5"
+      shadow-camera-right="5"
+      shadow-camera-bottom="-5"
+      shadow-camera-top="5"></a-light>
+      <a-light type="ambient" color="#888" ></a-light>
+
+
+      <a-marker type="pattern" url="pattern-dragonite-marker.patt">
+        <a-gltf-model src="#dragoniteModel"
+            position="0 0 -5"
+            scale="2 2 2"
+            animation-mixer="clip: pm0149_00_00_00300_roar01; loop: repeat;"
+            shadow="cast: true">
+            <a-animation 
+              attribute="rotation" 
+              to="0 360 0" 
+              dur="3000" 
+              easing="linear" 
+             repeat="indefinite">
+            </a-animation>
+        </a-gltf-model>
+      </a-marker>
+
+      <a-marker type="pattern" url="pattern-my-marker">
+        
+      </a-marker>
+
+      <a-entity camera>
+        <a-cursor></a-cursor>
+      </a-entity>
+    </a-scene>
+  </body>
+</html>
