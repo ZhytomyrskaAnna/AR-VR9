@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Практична робота №9: Власні маркери</title>
+    <title>Практична робота №9: Власні маркери (Виправлено)</title>
     <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v7.2.0/dist/aframe-extras.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-    <script scr="components.js"></script>
     <script>
+      // Компонент для кліків
       AFRAME.registerComponent('clickable', {
           init: function () {
               this.el.addEventListener('click', () => {
@@ -14,55 +14,173 @@
               });
           }
       });
+
+      // Компонент для керування мульти-анімацією
+      AFRAME.registerComponent('marker-animation-controller', {
+          init: function () {
+              const marker = this.el;
+              const box = marker.querySelector('#animatedBox');
+              let rotationAnimId = null;
+
+              marker.addEventListener('markerFound', () => {
+                  console.log('Маркер знайдено');
+                  
+                  // Показуємо об'єкт
+                  box.setAttribute('visible', 'true');
+                  
+                  // Анімація збільшення
+                  box.setAttribute('animation__scale', {
+                      property: 'scale',
+                      from: '0 0 0',
+                      to: '1 1 1',
+                      dur: 500,
+                      easing: 'easeOutElastic'
+                  });
+
+                  // Запускаємо постійне обертання після збільшення
+                  setTimeout(() => {
+                      box.setAttribute('animation__rotation', {
+                          property: 'rotation',
+                          from: '0 0 0',
+                          to: '0 360 0',
+                          dur: 2000,
+                          easing: 'linear',
+                          loop: true
+                      });
+                  }, 500);
+              });
+
+              marker.addEventListener('markerLost', () => {
+                  console.log('Маркер втрачено');
+                  
+                  // Видаляємо анімацію обертання
+                  box.removeAttribute('animation__rotation');
+                  
+                  // Анімація зменшення
+                  box.setAttribute('animation__scale', {
+                      property: 'scale',
+                      from: '1 1 1',
+                      to: '0 0 0',
+                      dur: 300,
+                      easing: 'easeInQuad'
+                  });
+
+                  // Ховаємо після анімації
+                  setTimeout(() => {
+                      box.setAttribute('visible', 'false');
+                      box.setAttribute('scale', '0 0 0');
+                      box.setAttribute('rotation', '0 0 0'); // Скидаємо обертання
+                  }, 300);
+              });
+          }
+      });
     </script>
   </head>
-  <body style="margin : 0px; overflow: hidden;">
+  <body style="margin: 0px; overflow: hidden;">
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
 
       <a-assets>
         <a-asset-item id="dragoniteModel" src="assets/dragonite_official.glb"></a-asset-item>
-        <img id="phoneIcon" src="assets/phone.jpg">
-        <img id="emailIcon" src="assets/gmail.jpg">
-        <img id="telegramIcon" src="https://raw.githubusercontent.com/aframevr/aframe/master/docs/assets/images/linkedin.png">
+        <img id="phoneImg" src="assets/phone.jpg">
+        <img id="emailImg" src="assets/gmail.jpg">
+        <img id="youtubeImg" src="assets/youtube.jpg">
       </a-assets>
 
+      <!-- Освітлення -->
       <a-light type="directional" 
-      position="-5 5 -5" 
-      intensity="1.5" 
-      castShadow="true"
-      shadow-mapSize="1024 1024"
-      shadow-camera-near="0.5"
-      shadow-camera-far="20"
-      shadow-camera-left="-5"
-      shadow-camera-right="5"
-      shadow-camera-bottom="-5"
-      shadow-camera-top="5"></a-light>
-      <a-light type="ambient" color="#888" ></a-light>
+        position="-5 5 -5" 
+        intensity="1.5" 
+        castShadow="true"
+        shadow-mapSize="1024 1024"
+        shadow-camera-near="0.5"
+        shadow-camera-far="20"
+        shadow-camera-left="-5"
+        shadow-camera-right="5"
+        shadow-camera-bottom="-5"
+        shadow-camera-top="5">
+      </a-light>
+      <a-light type="ambient" color="#888"></a-light>
 
-
+      <!-- Маркер з 3D моделлю -->
       <a-marker type="pattern" url="pattern-dragonite-marker.patt">
         <a-gltf-model src="#dragoniteModel"
             position="0 0 -5"
             scale="2 2 2"
             animation-mixer="clip: pm0149_00_00_00300_roar01; loop: repeat;"
+            animation__rotate="property: rotation; to: 0 360 0; dur: 3000; easing: linear; loop: true"
             shadow="cast: true">
-            <a-animation 
-              attribute="rotation" 
-              to="0 360 0" 
-              dur="3000" 
-              easing="linear" 
-             repeat="indefinite">
-            </a-animation>
         </a-gltf-model>
       </a-marker>
 
+      <!-- Маркер з іконками -->
       <a-marker type="pattern" url="pattern-my-marker">
-        
+        <a-image 
+          id="phoneIcon" 
+          src="#phoneImg" 
+          position="-0.5 0 0" 
+          scale="0.3 0.3 0.3" 
+          class="clickable">
+        </a-image>
+
+        <a-image 
+          id="emailIcon" 
+          src="#emailImg" 
+          position="0 0 0" 
+          scale="0.3 0.3 0.3" 
+          class="clickable">
+        </a-image>
+
+        <a-image 
+          id="youtubeIcon" 
+          src="#youtubeImg" 
+          position="0.5 0 0" 
+          scale="0.3 0.3 0.3" 
+          class="clickable">
+        </a-image>
+
+        <a-text 
+          id="infoText" 
+          value="" 
+          position="0 -0.5 0" 
+          align="center" 
+          color="black" 
+          width="3">
+        </a-text>
       </a-marker>
 
+      <!-- Маркер з анімацією (з використанням компонента) -->
+      <a-marker id="marker" type="pattern" url="pattern-marker-animation.patt" marker-animation-controller>
+        <a-box id="animatedBox"
+               position="0 0.5 0"
+               color="#4CC3D9"
+               scale="0 0 0"  
+               visible="false">
+        </a-box>
+      </a-marker>
+
+      <!-- Камера з курсором -->
       <a-entity camera>
         <a-cursor></a-cursor>
       </a-entity>
     </a-scene>
+
+    <!-- Обробка кліків на іконки -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const infoText = document.querySelector('#infoText');
+
+        document.querySelector('#phoneIcon').addEventListener('click', () => {
+          infoText.setAttribute('value', '📞 +380 68 070 34 57');
+        });
+
+        document.querySelector('#emailIcon').addEventListener('click', () => {
+          infoText.setAttribute('value', '✉️ zhytomyreti@email.com');
+        });
+
+        document.querySelector('#youtubeIcon').addEventListener('click', () => {
+          infoText.setAttribute('value', '🔗 https://www.youtube.com/@annazhytomyrska7541');
+        });
+      });
+    </script>
   </body>
 </html>
