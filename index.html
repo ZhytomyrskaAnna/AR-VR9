@@ -4,7 +4,7 @@
     <title>Практична робота №9: Власні маркери (Виправлено)</title>
     <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v7.2.0/dist/aframe-extras.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.5/aframe/build/aframe-ar.js"></script>
     <script>
       // Компонент для кліків
       AFRAME.registerComponent('clickable', {
@@ -119,7 +119,7 @@
           src="#phoneImg" 
           position="-0.5 0 0" 
           scale="0.3 0.3 0.3" 
-          class="clickable">
+          clickable>
         </a-image>
 
         <a-image 
@@ -127,7 +127,7 @@
           src="#emailImg" 
           position="0 0 0" 
           scale="0.3 0.3 0.3" 
-          class="clickable">
+          clickable>
         </a-image>
 
         <a-image 
@@ -135,14 +135,13 @@
           src="#youtubeImg" 
           position="0.5 0 0" 
           scale="0.3 0.3 0.3" 
-          class="clickable">
+          clickable>
         </a-image>
 
         <a-text 
           id="infoText" 
           value="" 
-          position="0 -0.5 0" 
-          align="center" 
+          position="0 -0.5 0"  
           color="black" 
           width="3">
         </a-text>
@@ -160,7 +159,7 @@
 
       <!-- Камера з курсором -->
       <a-entity camera>
-        <a-cursor></a-cursor>
+        <a-cursor raycaster="objects: .clickable"></a-cursor>
       </a-entity>
     </a-scene>
 
